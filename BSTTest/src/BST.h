@@ -197,12 +197,11 @@ template<typename bstdata>
 //void BST <bstdata>::inOrderPrint(Node* root) const{
 void BST<bstdata>::inOrderPrint(ostream &out, Node* thisRoot) const{
 if (thisRoot == NULL){
-return;
-
+	return;
 }
-else{
+else if (thisRoot != NULL){
 	inOrderPrint (out, thisRoot->leftchild);
-	out << thisRoot->leftchild->data << " ";
+	out << thisRoot->data << " ";
 	inOrderPrint (out, thisRoot->rightchild);
 }
 }
