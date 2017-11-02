@@ -33,13 +33,11 @@ private:
     Node* root;
 
     /**Private helper functions*/
-    void insertNode(Node* root, bstdata data);
+    void insertNode(Node* root, bstdata data); //DONE
     //private helper function for insert
     //recursively inserts a value into the BST
 
-    void inOrderPrint(ostream& out, Node* root) const;
-
-    //void inOrderPrint(Node* root) const;
+    void inOrderPrint(ostream& out, Node* root) const; //DONE
     //private helper function for inOrderPrint
     //recursively prints tree values in order from smallest to largest
 
@@ -47,14 +45,14 @@ private:
     //private helper function for preOrderPrint
     //recursively prints tree values in pre order
 
-    void postOrderPrint(ostream &out, Node* root) const;
+    void postOrderPrint(ostream &out, Node* root) const; //DONE
     //private helper function for postOrderPrint
     //recursively prints tree values in post order
 
     void copyNode(Node* copy) const;
     //recursive helper function to the copy constructor
 
-    void freeNode(Node* root);
+    void freeNode(Node* root); //DONE
     //private helper function for the destructor
     //recursively frees the memory in the BST
 
@@ -74,7 +72,7 @@ private:
     //recursive helper function to remove
     //removes data from the tree
 
-    void getSize(Node* root, int& size) const;
+    void getSize(Node* root, int& size) const; //DONE
     //recursive helper function to the size function
     //calculates the size of the tree
     //stores the result in size
@@ -87,13 +85,14 @@ public:
 
     /**constructors and destructor*/
 
-    BST();
+    BST();//DONE
     //Instantiates a new BST
 
     BST(const BST &bst);
     //copy constructor
 
-    //~BST();***********
+    //DECONSTRUCTOR
+     ~BST(); ///DONE
     //deallocates the tree memory
 
     /**access functions*/
@@ -106,10 +105,10 @@ public:
     //returns the maximum value in the BST
     //pre: !empty()
 
-    bool isEmpty() const;
+    bool isEmpty() const; //DONE
     //determines whether the BST is empty
 
-    int getSize() const;
+    int getSize() const; //DONE
     //returns the size of the tree
 
     bstdata getRoot() const;
@@ -119,13 +118,13 @@ public:
     int getHeight() const;
     //returns the height of the tree
 
-    bool search(bstdata data) const;
+    bool search(bstdata data);
     //returns whether the data is found in the tree
     //pre: !isEmpty()
 
     /**manipulation procedures*/
 
-    void insert(bstdata data);
+    void insert(bstdata data);//DONE
     //inserts new data into the BST
 
     void remove(bstdata data);
@@ -135,7 +134,7 @@ public:
 
     /**additional functions*/
 
-    void inOrderPrint(ostream& out) const;
+    void inOrderPrint(ostream& out) const; //DONE
     //void inOrderPrint() const;
     //calls the inOrderPrint function to print out the values
     //stored in the BST
@@ -144,18 +143,50 @@ public:
     //calls the reOrderPrint function to print out the values
     //stored in the BST
 
-    void postOrderPrint(ostream& out) const;
+    void postOrderPrint(ostream& out) const; //DONE
     //calls the postOrderPrint function to print out the values
     //stored in the BST
 };
 #endif /* BST_H_ */
-
+//CONSTRUCTORS
 //private helper function for insert
 //recursively inserts a value into the BST
 template<typename bstdata>
 BST<bstdata>::BST(){
 	root = NULL;
 }
+
+template<typename bstdata>
+BST<bstdata>::~BST(){
+assert(!isEmpty());
+ freeNode(root);
+}
+/*
+ * free node: checks if not null
+ * 			if not then it calls recursive step left (adds to the stack)
+ *               checks if leftchild is null
+ *                    calls recursive step on left again (adds to the stack
+ *                         it is null then it returns
+ *                  now it calls recursive step on right child (adds to the stack
+ *                       checks if its null
+ *                           if its not it checks its leftchild(adds to stack) null
+ *                           then checks its right child (adds to stack)  null
+ *                         if both are null then delete is added to the stack
+ *                         pops them off as it goes back up deleting
+ * */
+template<typename bstdata>
+void BST<bstdata>::freeNode(Node *thisRoot){
+	if (thisRoot == NULL){ //Base case once null return
+			return;
+		}
+		else if (thisRoot != NULL){
+			freeNode (thisRoot->leftchild);
+			freeNode (thisRoot->rightchild);
+			delete thisRoot;
+		}
+
+}
+
 template<typename bstdata>
 void BST<bstdata>::insert(bstdata data){
 	    if (root == NULL)// if root is empty
@@ -192,16 +223,92 @@ void BST<bstdata>::inOrderPrint(ostream& out) const{
 	else
 	  //inOrderPrint(root);
 	  inOrderPrint(out,root);
+	cout << endl;
 }
 template<typename bstdata>
 //void BST <bstdata>::inOrderPrint(Node* root) const{
 void BST<bstdata>::inOrderPrint(ostream &out, Node* thisRoot) const{
-if (thisRoot == NULL){
+if (thisRoot == NULL){ //Base case once null return
 	return;
 }
 else if (thisRoot != NULL){
-	inOrderPrint (out, thisRoot->leftchild);
+	inOrderPrint (out, thisRoot->leftchild); // go down left tree until null BECAUSE ITS A STACK THE LAST ONE ON IS FIRST OOUT
 	out << thisRoot->data << " ";
-	inOrderPrint (out, thisRoot->rightchild);
+	inOrderPrint (out, thisRoot->rightchild); // go down right tree until null
 }
+
+}
+
+template<typename bstdata>
+void BST<bstdata>::postOrderPrint(ostream& out) const{
+	if (root==NULL)
+			cout << "empty";
+		else
+		  postOrderPrint(out,root);
+		cout << endl;
+}
+template<typename bstdata>
+void BST<bstdata>::postOrderPrint(ostream &out, Node* thisRoot) const{
+	if (thisRoot == NULL){ //Base case once null return
+		return;
+	}
+	else if (thisRoot != NULL){
+		postOrderPrint (out, thisRoot->leftchild); // go down left tree until null BECAUSE ITS A STACK THE LAST ONE ON IS FIRST OOUT
+		postOrderPrint (out, thisRoot->rightchild); // go down right tree until null
+		out << thisRoot->data << " ";//print in order as it pops off the stack
+	}
+}
+
+template <typename bstdata>
+int BST <bstdata>::getSize() const{
+int size = 0;
+if (root==NULL)
+ return size;
+else
+	getSize(root,size);
+return size;
+}
+template <typename bstdata>
+void BST<bstdata>::getSize(Node* thisRoot, int& size) const{
+	if (thisRoot == NULL){
+		return;
+	}
+	else if (thisRoot != NULL){
+		getSize (thisRoot->leftchild,size);
+		size++;
+		getSize (thisRoot->rightchild,size);
+	}
+
+}
+template<typename bstdata>
+bool BST<bstdata>::isEmpty() const{
+	if (getSize() > 0)
+		return false;
+	else
+		return true;
+}
+template <typename bstdata>
+bool BST<bstdata>::search(bstdata data){
+	assert(!isEmpty());
+	if (root->data == data)
+		return true;
+	else
+		return searchNode(root,data);
+}
+template <typename bstdata>
+bool BST<bstdata>::searchNode(Node* thisRoot, bstdata data){
+	if(thisRoot->data==data)
+		return true;
+	else if (data < thisRoot->data){
+		if (thisRoot->leftchild==NULL)
+			return false;
+		else
+		searchNode(thisRoot->leftchild,data);
+	}
+	else{
+	    if(thisRoot->rightchild==NULL)
+	    	return false;
+	    else
+		  searchNode(thisRoot->rightchild,data);
+	}
 }
