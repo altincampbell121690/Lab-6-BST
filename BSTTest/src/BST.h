@@ -49,14 +49,14 @@ private:
     //private helper function for postOrderPrint
     //recursively prints tree values in post order
 
-    void copyNode(Node* copy) const;
+    void copyNode(Node* copy);
     //recursive helper function to the copy constructor
 
     void freeNode(Node* root); //DONE
     //private helper function for the destructor
     //recursively frees the memory in the BST
 
-    bool searchNode(Node* root, bstdata data);
+    bool searchNode(Node* root, bstdata data)const;
     //recursive helper function to search
     //returns whether the value is found in the tree
 
@@ -118,7 +118,7 @@ public:
     int getHeight() const;
     //returns the height of the tree
 
-    bool search(bstdata data);
+    bool search(bstdata data) const;
     //returns whether the data is found in the tree
     //pre: !isEmpty()
 
@@ -185,6 +185,80 @@ void BST<bstdata>::freeNode(Node *thisRoot){
 			delete thisRoot;
 		}
 
+}
+template<typename bstdata>
+BST<bstdata>::BST(const BST &bst) {
+	if (bst.root == NULL) {
+		root = NULL;
+	}
+	else {
+		root = new Node(bst.root->data);
+		copyNode(bst.root);
+	}
+}
+
+template<typename bstdata>
+void BST<bstdata>::copyNode(Node* copy) {
+	if (copy == NULL) { // base case
+		 return;
+	}
+	else {
+		insert(copy->data);
+
+		/*if (copy->leftchild != NULL) {
+			copyNode(copy->leftchild);
+		}
+		else if (copy->rightchild != NULL) {
+			copyNode(copy->rightchild);
+		}*/
+		//cout << "root data: " << root->data << endl;
+		copyNode(copy->leftchild);
+		copyNode(copy->rightchild);
+
+	}
+}
+
+
+
+template<typename bstdata>
+void BST<bstdata>::remove(bstdata data) {
+	assert(!isEmpty());
+	assert(search(data));
+	deleteNode(root, data);
+}
+
+template<typename bstdata>
+typename BST<bstdata>::Node* BST<bstdata>::deleteNode(Node* root, bstdata data) {
+	int nodeData;
+	if (root == NULL) {
+		return root;
+	}
+	else if (data < root->data) {
+		root->leftchild = deleteNode(root->leftchild, data);
+	}
+	else if (data > root->data) {
+		root->rightchild = deleteNode(root->rightchild, data);
+	}
+	else {
+		if (root->leftchild == NULL && root->rightchild == NULL) {
+			delete root;
+			root = NULL;
+		}
+		else if (root->leftchild != NULL && root->rightchild == NULL) {
+			root->leftchild = root;
+			delete root;
+		}
+		else if (root->leftchild == NULL && root->rightchild != NULL) {
+			root->rightchild = root;
+			delete root;
+		}
+		else {
+			nodeData = minimum(root->rightchild);
+			root->data = nodeData;
+			root->rightchild = deleteNode(root->rightchild, minimum(root->rightchild));
+		}
+	}
+	return root;
 }
 
 template<typename bstdata>
@@ -259,6 +333,28 @@ void BST<bstdata>::postOrderPrint(ostream &out, Node* thisRoot) const{
 	}
 }
 
+template<typename bstdata>
+void BST<bstdata>::preOrderPrint(ostream& out) const {
+	if (root == NULL)
+		cout << "Empty";
+	else {
+		preOrderPrint(out, root);
+		cout << endl;
+	}
+}
+
+template<typename bstdata>
+void BST<bstdata>::preOrderPrint(ostream& out, Node* root) const {
+	if (root == NULL) {
+		//cout << "Empty";
+		return;
+	}
+	else {
+		out << root->data << " ";
+		preOrderPrint(out, root->leftchild);
+		preOrderPrint(out, root->rightchild);
+	}
+}
 template <typename bstdata>
 int BST <bstdata>::getSize() const{
 int size = 0;
@@ -288,7 +384,7 @@ bool BST<bstdata>::isEmpty() const{
 		return true;
 }
 template <typename bstdata>
-bool BST<bstdata>::search(bstdata data){
+bool BST<bstdata>::search(bstdata data) const{
 	assert(!isEmpty());
 	if (root->data == data)
 		return true;
@@ -296,7 +392,7 @@ bool BST<bstdata>::search(bstdata data){
 		return searchNode(root,data);
 }
 template <typename bstdata>
-bool BST<bstdata>::searchNode(Node* thisRoot, bstdata data){
+bool BST<bstdata>::searchNode(Node* thisRoot, bstdata data) const{
 	if(thisRoot->data==data)
 		return true;
 	else if (data < thisRoot->data){
@@ -311,4 +407,55 @@ bool BST<bstdata>::searchNode(Node* thisRoot, bstdata data){
 	    else
 		  searchNode(thisRoot->rightchild,data);
 	}
+}
+
+template<typename bstdata>
+bstdata BST<bstdata>::minimum() const {
+	assert(!isEmpty());
+	return minimum(root);
+}
+
+template<typename bstdata>
+bstdata BST<bstdata>::minimum(Node* root) const {
+	if (root->leftchild != NULL) {
+		return minimum(root->leftchild);
+	}
+	else {
+		return root->data;
+	}
+}
+
+template<typename bstdata>
+bstdata BST<bstdata>::maximum() const {
+	assert(!isEmpty());
+	return maximum(root);
+}
+
+template<typename bstdata>
+bstdata BST<bstdata>::maximum(Node* root) const {
+	if (root->rightchild != NULL)
+		return maximum(root->rightchild);
+	else
+		return root->data;
+}
+
+template<typename bstdata>
+int BST<bstdata>::getHeight() const {
+	return getHeight(root);
+}
+
+template<typename bstdata>
+int BST<bstdata>::getHeight(Node* root) const {
+	int left, right;
+	if (root == NULL)
+		return 0;
+	else {
+		left = getHeight(root->leftchild);
+		right = getHeight(root->rightchild);
+		if (left > right)
+			return(left+1);
+		else
+			return(right+1);
+	}
+
 }
